@@ -1,57 +1,30 @@
 #!/usr/bin/python3
 """Module defining isWinner function."""
 
-
 def isWinner(x, nums):
-    """Function to get who has won in prime game"""
+    """Function to determine the winner of the prime game."""
     mariaWinsCount = 0
     benWinsCount = 0
 
-    for num in nums:
-        roundsSet = list(range(1, num + 1))
-        primesSet = primes_in_range(1, num)
+    max_n = max(nums)
+    is_prime = [True] * (max_n + 1)
+    is_prime[0] = is_prime[1] = False  
+    for start in range(2, int(max_n**0.5) + 1):
+        if is_prime[start]:
+            for multiple in range(start * start, max_n + 1, start):
+                is_prime[multiple] = False
 
-        if not primesSet:
+    for n in nums:
+        prime_count = sum(is_prime[2:n + 1])
+        
+        if prime_count % 2 == 1:
+            mariaWinsCount += 1
+        else:  
             benWinsCount += 1
-            continue
-
-        isMariaTurns = True
-
-        while(True):
-            if not primesSet:
-                if isMariaTurns:
-                    benWinsCount += 1
-                else:
-                    mariaWinsCount += 1
-                break
-
-            smallestPrime = primesSet.pop(0)
-            roundsSet.remove(smallestPrime)
-
-            roundsSet = [x for x in roundsSet if x % smallestPrime != 0]
-
-            isMariaTurns = not isMariaTurns
 
     if mariaWinsCount > benWinsCount:
-        return "Winner: Maria"
-
-    if mariaWinsCount < benWinsCount:
-        return "Winner: Ben"
-
-    return None
-
-
-def is_prime(n):
-    """Returns True if n is prime, else False."""
-    if n < 2:
-        return False
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
-            return False
-    return True
-
-
-def primes_in_range(start, end):
-    """Returns a list of prime numbers between start and end (inclusive)."""
-    primes = [n for n in range(start, end+1) if is_prime(n)]
-    return primes
+        return "Maria"
+    elif benWinsCount > mariaWinsCount:
+        return "Ben"
+    else:
+        return None
